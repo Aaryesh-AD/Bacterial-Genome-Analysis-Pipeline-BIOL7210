@@ -167,19 +167,19 @@ test_data/
 ```
 ### Test Data
 
-The included test data in the `test_data/` directory contains downsampled paired-end reads from *Klebsiella pneumoniae* strain FDAARGOS_439 (SRA accession: SRR10971381). The reads have been downsampled to approximately 1% of the original dataset (≈50,000 reads) using seqtk:
+The included test data in the `test_data/` directory contains downsampled paired-end reads from *Klebsiella pneumoniae* (SRA accession: SRR32935048). The reads have been downsampled to approximately 75% of the original dataset (~1,400,000 reads) using seqtk:
 
 ```bash
 # Command used for downsampling (for reference)
-seqtk sample -s100 SRR10971381_1.fastq.gz 0.01 > klebsiella_R1.fastq
-seqtk sample -s100 SRR10971381_2.fastq.gz 0.01 > klebsiella_R2.fastq
+seqtk sample -s200 SRR32935048_1.fastq.gz 0.75 > klebsiella_R1.fastq
+seqtk sample -s200 SRR32935048_2.fastq.gz 0.75 > klebsiella_R2.fastq
 gzip klebsiella_R1.fastq klebsiella_R2.fastq
 ```
 This downsampled dataset is provided solely for testing the pipeline functionality and should not be used for actual research purposes. For real analyses, please use full datasets or your own sequencing data.
 
 To run the pipeline with the full Klebsiella pneumoniae dataset, you can use:
 ```bash
-nextflow run main.nf -profile docker --use_sra --sra_ids "SRR10971381"
+nextflow run main.nf -profile docker --use_sra --sra_ids "SRR32935048"
 ```
 The pipeline will automatically download the full dataset from SRA.
 
