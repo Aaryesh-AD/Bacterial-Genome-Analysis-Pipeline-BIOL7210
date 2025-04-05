@@ -1,11 +1,15 @@
 nextflow.enable.dsl=2
 
-// Import workflows
+// Import modular subworkflows
 include { ASSEMBLY_ANNOTATION } from './subworkflows/assembly_and_annotation'
 include { QUALITY_PROFILE } from './subworkflows/quality_and_profile'
 
-// Define the main workflow
+/**
+ * Main workflow for bacterial genome analysis
+ * This pipeline performs assembly, annotation, quality assessment, and functional profiling
+ */
 workflow {
+    // Display pipeline information and configuration summary
     log.info """
 ==============================================================================
 BIOL7210 FUNCTIONAL GENE DISCOVERY WORKFLOW - Nexflow v${nextflow.version}
@@ -15,27 +19,28 @@ Output dir: ${params.outdir}
 ==============================================================================
 """
 
-    // Create input channel based on the data source
+    // Initialize the input channel based on the selected data source
     if (!params.use_sra) {
-        // Use local fastq files
+        // Process local FASTQ files when SRA mode is disabled
         Channel
             .fromFilePairs(params.reads, flat: true)
             .ifEmpty { error "Cannot find any reads matching: ${params.reads}" }
             .set { input_data }
     } else {
-        // We'll create the SRA channel inside the ASSEMBLY_ANNOTATION workflow
+        // For SRA mode, we'll handle data fetching within the ASSEMBLY_ANNOTATION workflow
         input_data = Channel.empty()
     }
     
-    // Execute the subworkflows
+    // Execute the genome assembly and annotation workflow
     ASSEMBLY_ANNOTATION(input_data)
     
-    // Execute the quality profile subworkflow
+    // Execute the quality assessment and functional profiling workflow
+    // Pass the outputs from assembly workflow as inputs to the profiling workflow
     QUALITY_PROFILE(
-        ASSEMBLY_ANNOTATION.out.reads,        // reads
-        ASSEMBLY_ANNOTATION.out.assemblies,   // assemblies
-        ASSEMBLY_ANNOTATION.out.genes,        // genes
-        ASSEMBLY_ANNOTATION.out.domains,      // domains
-        ASSEMBLY_ANNOTATION.out.homology      // homology
+        ASSEMBLY_ANNOTATION.out.reads,        // Processed read data
+        ASSEMBLY_ANNOTATION.out.assemblies,   // Assembled genomes
+        ASSEMBLY_ANNOTATION.out.genes,        // Predicted genes
+        ASSEMBLY_ANNOTATION.out.domains,      // Identified protein domains
+        ASSEMBLY_ANNOTATION.out.homology      // Homology search results
     )
 }

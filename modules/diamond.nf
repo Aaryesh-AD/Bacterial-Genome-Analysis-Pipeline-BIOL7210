@@ -1,3 +1,12 @@
+/*
+ * Protein homology search against reference database using DIAMOND
+ *
+ * This module performs fast protein homology searches using DIAMOND, which is much 
+ * faster than BLAST while maintaining good sensitivity. It downloads UniRef90 as a 
+ * reference database if one is not provided, creates a DIAMOND database, and runs 
+ * a search for each sample's protein sequences.
+ */
+
 process DIAMOND {
     tag "$sample_id"
     
@@ -9,29 +18,29 @@ process DIAMOND {
     
     script:
     """
-    # Create a temporary directory in /tmp (which never has spaces)
+    # Create a temporary directory for database operations
     TMPDIR=\$(mktemp -d -p /tmp diamond_XXXXXX)
     
-    # Download and prepare NR database if not present and needs to be downloaded
+    # Prepare reference database - download and build if not already available
     if [ ! -f "${params.nr_db}.dmnd" ] && [ ! -f "\$TMPDIR/nr.dmnd" ]; then
         mkdir -p \$TMPDIR
         cd \$TMPDIR
         
         echo "Downloading reference protein database..."
-        # Instead of full NR, use UniRef90 which is smaller but comprehensive
+        # Use UniRef90 as reference - more manageable size with comprehensive coverage
         wget -q ftp://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz
         gunzip uniref90.fasta.gz
         
-        # Make DIAMOND database
+        # Convert FASTA to DIAMOND database format
         diamond makedb --in uniref90.fasta -d uniref90
         
         NR_DB="\$TMPDIR/uniref90"
     else
-        # Use provided database path
+        # Use the existing database specified in parameters
         NR_DB="${params.nr_db}"
     fi
     
-    # Run DIAMOND for homology search
+    # Perform protein homology search using DIAMOND
     diamond blastp \
         --query ${proteins} \
         --db \$NR_DB \
@@ -41,10 +50,10 @@ process DIAMOND {
         --evalue ${params.diamond_evalue} \
         --threads ${task.cpus}
     
-    # Add header
+    # Add descriptive header to output file
     sed -i '1i #query\tsubject\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore\tstitle' ${sample_id}_diamond.tsv
     
-    # Clean up
+    # Remove temporary data to free space
     rm -rf \$TMPDIR
     """
 }
