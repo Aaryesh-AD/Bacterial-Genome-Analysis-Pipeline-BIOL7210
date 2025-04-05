@@ -1,0 +1,51 @@
+# Nextflow specific
+.nextflow/
+.nextflow.log*
+work/
+results/
+.DS_Store
+
+# Data files
+*.fastq
+*.fastq.gz
+*.fq
+*.fq.gz
+*.bam
+*.sam
+*.vcf
+*.vcf.gz
+
+# R specific
+.Rhistory
+.RData
+.Rproj.user/
+*.Rproj
+
+# Python specific
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Editor specific
+.vscode/
+.idea/
+*.swp
+*.swo
+
