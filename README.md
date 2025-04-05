@@ -177,13 +177,26 @@ test_data/
 ```
 ### Test Data
 
-The included test data in the `test_data/` directory contains downsampled paired-end reads from *Klebsiella pneumoniae* (SRA accession: SRR32935048). The reads have been downsampled to approximately 75% of the original dataset (~1,400,000 reads) using seqtk:
+The included test data in the `test_data/` directory contains downsampled paired-end reads from *Klebsiella pneumoniae* (SRA accession: SRR32935048). **The test data is tracked using Git LFS (Large File Storage) due to file size constraints of standard Git repositories, so take into account the storage constraints, the test data is about ~450mb**. The reads have been downsampled to approximately 75% of the original dataset (~1,400,000 reads) using seqtk:
 
 ```bash
+# Download the test data
+prefetch SRR32935048
+fasterq-dump --split-files --skip-technical SRR32935048
+gzip -f SRR32935048_*.fastq
+
+# Or remove the hard links before compressing (if any errors occur)
+# rm -f SRR32935048_*.fastq.gz  # Remove any existing compressed files first
+# gzip SRR32935048_*.fastq
+
+rm -rf SRR32935048/
+
+# Downsample the data to 75% of the original size
 # Command used for downsampling (for reference)
-seqtk sample -s200 SRR32935048_1.fastq.gz 0.75 > klebsiella_R1.fastq
-seqtk sample -s200 SRR32935048_2.fastq.gz 0.75 > klebsiella_R2.fastq
-gzip klebsiella_R1.fastq klebsiella_R2.fastq
+seqtk sample -s160 SRR32935048_1.fastq.gz 0.75 > klebsiella_R1.fastq
+seqtk sample -s160 SRR32935048_2.fastq.gz 0.75 > klebsiella_R2.fastq
+gzip -f klebsiella_R1.fastq klebsiella_R2.fastq
+rm -rf SRR32935048_*.fastq.gz
 ```
 This downsampled dataset is provided solely for testing the pipeline functionality and should not be used for actual research purposes. For real analyses, please use full datasets or your own sequencing data.
 
