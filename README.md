@@ -1,10 +1,20 @@
-# Bacterial Genome Analysis Pipeline
+# Bacterial Genome Analysis Pipeline - BIOL7210
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/nextflow-io/trademark/master/nextflow-logo-bg-dark.png" alt="Nextflow Logo" width="200"/>
 </div>
+<br>
 
-A robust Nextflow pipeline for simple bacterial genome assembly, annotation, and functional gene discovery, developed for BIOL7210 Computational Genomics.
+<div align="center">
+  <a href="https://www.nextflow.io/"><img src="https://img.shields.io/badge/nextflow-DSL2-brightgreen?style=flat-square&logo=nextflow" alt="Nextflow"></a>
+  <a href="#"><img src="https://img.shields.io/badge/container-docker-blue?logo=docker&style=flat-square" alt="Dockerized"></a>
+  <img src="https://img.shields.io/github/repo-size/Aaryesh-AD/Bacterial-Genome-Analysis-Pipeline-BIOL7210" alt="GitHub Repo size">
+  <img src="https://img.shields.io/github/last-commit/Aaryesh-AD/Bacterial-Genome-Analysis-Pipeline-BIOL7210" alt="GitHub last commit">
+</div>
+
+---
+
+A robust Nextflow pipeline for simple bacterial genome assembly, annotation, and functional gene discovery, developed as part of Georgia Tech's BIOL7210 Computational Genomics Course.
 
 ## Overview
 
@@ -276,7 +286,7 @@ This pipeline was developed for BIOL7210 Computational Genomics to demonstrate N
 
 ## Acknowledgements
 
-This pipeline was developed as part of the **BIOL7210 Computational Genomics** course. Special thanks to the **Nextflow community** for their excellent documentation and examples, which greatly supported this work. 
+This pipeline was developed as part of the **Georgia Tech's BIOL7210 - Computational Genomics** course. Special thanks to the **Nextflow community** for their excellent documentation and examples, which greatly supported this work. 
 
 I would also like to thank **Dr. Christopher Gulvik**, the instructor of the course, for his guidance and support throughout the coursework.
 
