@@ -2,7 +2,7 @@
 .nextflow/
 .nextflow.log*
 work/
-results/
+# results/ # (uncomment if you want to ignore the results directory)
 .DS_Store
 
 # Editor specific
