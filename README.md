@@ -104,11 +104,21 @@ cd Bacterial-Genome-Analysis-Pipeline-BIOL7210
 
 2. Set up the environment:
 ```bash
+# Setup Environment and Dependencies
+
+# Create a Conda environment with required dependencies
+conda env create -f environment.yml
+
+# Activate the environment
+conda activate nf-bac-genomics
+
 # Make the setup script executable
 chmod +x setup.sh
+
 # Run the setup script to preload Docker images
 ./setup.sh
 ```
+
 
 3. Run the pipeline with test data:
 ```bash
