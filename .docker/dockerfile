@@ -1,0 +1,64 @@
+FROM ubuntu:22.04
+
+LABEL maintainer="Aaryesh Deshpande" \
+    description="Container for Bacterial Genome Analysis Pipeline (BIOL7210)"
+
+# Prevent interactive prompts during installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install system dependencies required for the pipeline
+RUN apt-get update && apt-get install -y \
+    wget \
+    curl \
+    openjdk-11-jdk \
+    graphviz \
+    git \
+    docker.io \
+    python3-pip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Nextflow framework for workflow management
+RUN wget -qO- https://get.nextflow.io | bash && \
+    mv nextflow /usr/local/bin/ && \
+    chmod +x /usr/local/bin/nextflow
+
+# Set up workspace directory for pipeline execution
+WORKDIR /pipeline
+
+# Copy pipeline configuration and execution files
+COPY main.nf .
+COPY nextflow.config .
+COPY setup.sh .
+COPY environment.yml .
+COPY subworkflows/ ./subworkflows/
+COPY modules/ ./modules/
+COPY test_data/ ./test_data/
+
+# Make setup script executable
+RUN chmod +x setup.sh
+
+# Create output directories for pipeline results and temporary work files
+RUN mkdir -p results work
+
+# Create entrypoint script to handle pipeline execution
+# This provides a user-friendly interface for running the pipeline
+RUN echo '#!/bin/bash\n\
+if [ "$1" = "help" ]; then\n\
+    echo "Usage: docker run [docker-options] image-name [pipeline-options]"\n\
+    echo ""\n\
+    echo "Examples:"\n\
+    echo "  # Run with test data:"\n\
+    echo "  docker run -v $(pwd)/results:/pipeline/results my-pipeline"\n\
+    echo ""\n\
+    echo "  # Run with SRA data:"\n\
+    echo "  docker run -v $(pwd)/results:/pipeline/results my-pipeline --use_sra --sra_ids SRR10971381"\n\
+    exit 0\n\
+fi\n\
+\n\
+# Execute the Nextflow pipeline with provided arguments\n\
+nextflow run main.nf -profile docker "$@"\n\
+' > /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/entrypoint.sh
+
+# Set the entrypoint to our script to enable easy pipeline execution
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

@@ -120,6 +120,38 @@ nextflow run main.nf -profile docker
 nextflow run main.nf -profile docker --use_sra --sra_ids "SRR10971381,SRR10971382"
 ```
 
+### Docker Container (Optional) - May cause issues
+
+You can also run the entire pipeline within a Docker container:
+
+1. Build the Docker image:
+```bash
+docker build -t biol7210-pipeline .
+```
+
+2. Run the pipeline with test data:
+```bash
+# Create a directory for results
+mkdir -p results
+
+# Run the pipeline with test data, mounting the results directory
+docker run -v $(pwd)/results:/pipeline/results biol7210-pipeline
+```
+
+3. Run with SRA data:
+```bash
+docker run -v $(pwd)/results:/pipeline/results biol7210-pipeline --use_sra --sra_ids "SRR10971381"
+```
+
+4. Get help:
+```bash
+docker run biol7210-pipeline help
+```
+
+> [!CAUTION]
+> This containerized approach includes Nextflow itself. Since the pipeline uses Docker for individual processes, this creates a Docker-in-Docker scenario which may require additional permissions. For simpler deployments, we recommend installing Nextflow directly on your system and using the standard execution commands.
+
+
 ## Input
 
 The pipeline accepts two types of input:
