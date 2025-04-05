@@ -1,0 +1,6 @@
+# This .gitkeep file ensures Git tracks this otherwise empty directory
+# Git does not track empty directories by default
+# 
+# This allows the results directory structure to be preserved when cloning or
+# pulling the repository while excluding the actual results from version control
+# Output files from workflow execution should be placed in this directory
