@@ -5,16 +5,6 @@ work/
 results/
 .DS_Store
 
-# Data files
-*.fastq
-*.fastq.gz
-*.fq
-*.fq.gz
-*.bam
-*.sam
-*.vcf
-*.vcf.gz
-
 # R specific
 .Rhistory
 .RData
