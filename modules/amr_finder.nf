@@ -19,6 +19,7 @@ process AMR_FINDER {
     path("${sample_id}_amr_summary.txt"), emit: summary
     path("amr_logs"), emit: logs
 
+    // I dont know half this stuff, copied it from GitHub, but it seems to work.. so thats good
     script:
     // Define organism parameter if specified
     def organism_param = params.amr_organism ? "--organism ${params.amr_organism}" : ""

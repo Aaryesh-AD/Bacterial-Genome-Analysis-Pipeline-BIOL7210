@@ -8,6 +8,7 @@ include { ASSEMBLY_AMR_WORKFLOW } from './subworkflows/assembly_amr_wf'
  * This pipeline performs assembly, annotation, quality assessment, and functional profiling
  */
 workflow {
+    // Added ASCII art for pipeline branding (looks nice in terminal, aint it?)
     // Display pipeline information and configuration summary
     log.info """
 ==============================================================================
@@ -45,7 +46,7 @@ Output dir: ${params.outdir}
     ASSEMBLY_AMR_WORKFLOW(input_data)
 }
 
-// Display completion message
+// Display completion message (optional)
 workflow.onComplete {
     log.info """
     Pipeline execution summary
@@ -66,18 +67,23 @@ workflow.onError {
     TROUBLESHOOTING TIPS:
     
     1. Check container availability:
-       Run ./verify_containers.sh to verify all required containers
+       Run ./verify_containers.sh to verify all required containers are available - I suggest to do it :) cuz I faced a lot of issues with containers configs
     
     2. Check for spaces in paths:
-       QUAST and other tools may have issues with spaces in paths
+       QUAST and other tools may have issues with spaces in paths 
+       (I faced it with QUAST but tried to fix it using escape characters, but can't guarantee it will work for all cases lol)
     
     3. Check input data:
-       Ensure input data is properly formatted and accessible
+       Ensure input data is properly formatted and accessible (according to the input type, also the regex matching should be taken into account, to lazy to do it now)
     
     4. Memory/CPU issues:
        For large genomes, increase memory with --memory parameter
     
-    For detailed logs, check .nextflow.log and process work directories
+    For detailed logs, check .nextflow.log and process work directories 
+
+    If you encounter any issues, please report them on the GitHub repository. 
+    And if you are really reading this message, I appreciate your attention! I see you are have encountered some issues, but I hope you are not too frustrated.
+    Thank you for using the Bacterial Genome Assembly & AMR Analysis Pipeline!
     =============================================
     """
 }

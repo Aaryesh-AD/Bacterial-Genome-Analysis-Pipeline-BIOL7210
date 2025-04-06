@@ -13,6 +13,11 @@ process QUAST {
     output:
     tuple val(sample_id), path("${sample_id}_quast")
     
+    // Using Shell instead of script block to avoid issues with file paths. Using this approach after a lot of testing ( I mean a lot of errors lol)
+    // QUAST has issues with spaces in paths, so we need to handle it carefully
+    // Also, QUAST has a lot of output files, so we need to make sure we are copying the right ones and not overwriting them
+
+    // Most of this stuff is mainly log and debug stuff.. but i am too lazy to remove it lol
     shell:
     '''
     # Store the current directory path to return to later

@@ -19,6 +19,8 @@ process SPADES {
     output:
     tuple val(sample_id), path("${sample_id}_contigs.fasta")
     
+    // This spades step takes a lot of time and memory, so we need to set the memory and CPU requirements accordingly
+    // In my testing it was taking 20-30 minutes for the test data, but for larger genomes it may take longer so set the memory and CPU requirements accordingly :)    
     script:
     def memory = task.memory.toGiga()
     """

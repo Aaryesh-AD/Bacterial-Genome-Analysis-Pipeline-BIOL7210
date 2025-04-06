@@ -21,6 +21,7 @@ process FASTP {
     path("${sample_id}_fastp.html"), emit: html
     path("${sample_id}_fastp.json"), emit: json
     
+    // Change the parameters as needed. 
     script:
     """
     # Run fastp with optimized parameters

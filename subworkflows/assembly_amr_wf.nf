@@ -23,11 +23,12 @@ include { AMR_FINDER }   from '../modules/amr_finder'
  */
 workflow ASSEMBLY_AMR_WORKFLOW {
     take:
-        input_data   // Channel: [sample_id, read1, read2] or empty if using SRA
+        input_data   // Channel: [sample_id, read1, read2] or empty if using SRA (from module)
 
     main:
         // STEP 1: DATA ACQUISITION
-        // Either use input reads or download from SRA
+        // Either use input reads or download from SRA if specified 
+        // (This may break sometimes so I reckon it is better to use local files by manual download as much as possible)
         if (params.use_sra) {
             log.info "Downloading reads from SRA..."
             Channel
@@ -61,11 +62,10 @@ workflow ASSEMBLY_AMR_WORKFLOW {
         AMR_FINDER(PRODIGAL.out)
         
         // Create a summary report that combines key results
-        // We need to properly handle the AMR_FINDER output
-        // AMR_FINDER.out[0] contains the tuple with sample_id and amr_tsv
+        // AMR_FINDER.out[0] contains the tuple with sample_id and amr_tsv (had to figure out this the hard way, spend way too much time on this)
         amr_results = AMR_FINDER.out[0]
         
-        // Join the AMR and QUAST results using sample_id as the key
+        // Join the AMR and QUAST results using sample_id as the key (got this from the example in one of the GitHub nextlfow repos lol)
         amr_results
             .join(QUAST.out)
             .set { results_ch }
