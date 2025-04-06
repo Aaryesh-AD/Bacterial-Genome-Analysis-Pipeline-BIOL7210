@@ -1,11 +1,17 @@
 /**
-    This process uses SPAdes for genome assembly.
-    It takes paired-end reads as input and produces a contig file as output.
-    The process is designed to run in a temporary directory to avoid issues with path names. (had to do it, since there was a problem with spaces in the path names in my tests)
-    The SPAdes assembler is run in isolate mode, which is optimized for bacterial genomes.
-*/
+ * De novo genome assembly using SPAdes
+ *
+ * This module assembles bacterial genomes from paired-end reads using the SPAdes
+ * assembler. It supports different assembly modes (isolate, meta, rna, etc.)
+ * and handles temporary files efficiently.
+ */
 process SPADES {
     tag "$sample_id"
+    publishDir "${params.outdir}/assemblies", mode: "copy",
+        saveAs: { filename ->
+            if (filename.endsWith(".fasta")) "${sample_id}/${filename}"
+            else null
+        }
     
     input:
     tuple val(sample_id), path(read1), path(read2)
@@ -14,39 +20,30 @@ process SPADES {
     tuple val(sample_id), path("${sample_id}_contigs.fasta")
     
     script:
+    def memory = task.memory.toGiga()
     """
     # Create a temporary directory for SPAdes output
-    # This avoids issues with path names containing spaces or special characters
     TMPDIR=\$(mktemp -d -p /tmp spades_XXXXXX)
     
-    # Execute SPAdes assembler in isolate mode (optimized for bacterial genomes)
-    # Forward and reverse reads are provided along with output directory
-    # Resource allocation is managed through task.cpus and task.memory
+    # Execute SPAdes assembler with configurable mode
     spades.py \
-        --isolate \
+        --${params.spades_mode} \
         -1 ${read1} \
         -2 ${read2} \
         -o \$TMPDIR \
         -t ${task.cpus} \
-        -m ${task.memory.toGiga()}
+        -m ${params.spades_memory ?: memory} \
+        ${params.spades_careful ? '--careful' : ''} \
+        --phred-offset 33
     
     # Copy the assembled contigs with a sample-specific filename
     cp \$TMPDIR/contigs.fasta ${sample_id}_contigs.fasta
     
+    # Save log files for troubleshooting if needed
+    mkdir -p logs
+    cp \$TMPDIR/spades.log logs/${sample_id}_spades.log
+    
     # Remove temporary directory to free disk space
     rm -rf \$TMPDIR
     """
-}
-
-/**
-    Workflow: SPADES_WF
-    This workflow wraps the SPADES process, allowing it to be used as a modular component in larger workflows.
-    It takes paired-end reads as input and outputs the assembled contigs.
-*/
-workflow SPADES_WF {
-    take: reads
-    main:
-        SPADES(reads)
-    emit:
-        SPADES.out
 }

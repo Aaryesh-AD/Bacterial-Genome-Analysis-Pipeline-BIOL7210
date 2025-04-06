@@ -1,51 +1,46 @@
 /**
- * Process FASTP
- * 
- * Performs quality control and adapter trimming on paired-end Illumina reads
- * using the Fastp tool. This process trims adapters, filters low quality reads,
- * and produces both trimmed fastq files and QC reports.
+ * Read quality control and preprocessing using fastp
+ *
+ * This module performs adapter trimming, quality filtering, and other
+ * preprocessing steps on paired-end sequencing reads.
  */
 process FASTP {
     tag "$sample_id"
+    publishDir "${params.outdir}/fastp", mode: "copy",
+        saveAs: { filename ->
+            if (filename.endsWith(".html")) "reports/${filename}"
+            else if (filename.endsWith(".json")) "reports/${filename}"
+            else params.save_trimmed_reads ? "trimmed/${filename}" : null
+        }
     
     input:
-    tuple val(sample_id), path(read1), path(read2)  // Sample ID and paired-end read files
+    tuple val(sample_id), path(read1), path(read2)
     
     output:
-    tuple val(sample_id), path("${sample_id}_1.trimmed.fastq.gz"), path("${sample_id}_2.trimmed.fastq.gz"), emit: reads  // Trimmed read pairs
-    path("${sample_id}_fastp.html"), emit: html  // HTML report
-    path("${sample_id}_fastp.json"), emit: json  // JSON metrics file
+    tuple val(sample_id), path("${sample_id}_1.trimmed.fastq.gz"), path("${sample_id}_2.trimmed.fastq.gz"), emit: reads
+    path("${sample_id}_fastp.html"), emit: html
+    path("${sample_id}_fastp.json"), emit: json
     
     script:
-    // Execute fastp with paired-end mode settings and auto-detection of adapters
     """
+    # Run fastp with optimized parameters
     fastp \
         --in1 ${read1} \
         --in2 ${read2} \
         --out1 ${sample_id}_1.trimmed.fastq.gz \
         --out2 ${sample_id}_2.trimmed.fastq.gz \
-        --json ${sample_id}_fastp.json \
-        --html ${sample_id}_fastp.html \
         --detect_adapter_for_pe \
+        --qualified_quality_phred ${params.fastp_qualified_quality} \
+        --unqualified_percent_limit ${params.fastp_unqualified_percent_limit} \
+        --cut_front \
+        --cut_front_window_size ${params.fastp_cut_window_size} \
+        --cut_front_mean_quality ${params.fastp_cut_mean_quality} \
+        --cut_tail \
+        --cut_tail_window_size ${params.fastp_cut_window_size} \
+        --cut_tail_mean_quality ${params.fastp_cut_mean_quality} \
+        --length_required ${params.fastp_min_length} \
+        --html ${sample_id}_fastp.html \
+        --json ${sample_id}_fastp.json \
         --thread ${task.cpus}
     """
-}
-
-/**
- * Workflow: FASTP_WF
- * 
- * A wrapper workflow around the FASTP process. This provides a modular
- * component that can be included in larger workflows. It takes paired
- * read files as input and outputs trimmed read files along with QC reports.
- */
-workflow FASTP_WF {
-    take: reads  // Input channel with paired-end reads
-    
-    main:
-        FASTP(reads)  // Execute fastp on all input samples
-    
-    emit:
-        reads = FASTP.out.reads  // Trimmed read pairs
-        html = FASTP.out.html    // HTML reports
-        json = FASTP.out.json    // JSON metrics files
 }
