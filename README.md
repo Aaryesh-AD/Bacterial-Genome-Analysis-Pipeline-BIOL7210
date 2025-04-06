@@ -1,4 +1,5 @@
-# Bacterial Genome Analysis Pipeline - BIOL7210
+
+# Bacterial Genome Analysis & AMR Detection Pipeline
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/nextflow-io/trademark/master/nextflow-logo-bg-dark.png" alt="Nextflow Logo" width="200"/>
@@ -8,31 +9,40 @@
 <div align="center">
   <a href="https://www.nextflow.io/"><img src="https://img.shields.io/badge/nextflow-DSL2-brightgreen?style=flat-square&logo=nextflow" alt="Nextflow"></a>
   <a href="#"><img src="https://img.shields.io/badge/container-docker-blue?logo=docker&style=flat-square" alt="Dockerized"></a>
-  <img src="https://img.shields.io/github/repo-size/Aaryesh-AD/Bacterial-Genome-Analysis-Pipeline-BIOL7210" alt="GitHub Repo size">
+  <a href="#"><img src="https://img.shields.io/badge/platform-linux%20%7C%20wsl2-orange?style=flat-square" alt="Platform"></a>
+    <img src="https://img.shields.io/github/repo-size/Aaryesh-AD/Bacterial-Genome-Analysis-Pipeline-BIOL7210" alt="GitHub Repo size">
   <img src="https://img.shields.io/github/last-commit/Aaryesh-AD/Bacterial-Genome-Analysis-Pipeline-BIOL7210" alt="GitHub last commit">
 </div>
 
 ---
 
-A robust Nextflow pipeline for simple bacterial genome assembly, annotation, and functional gene discovery, developed as part of Georgia Tech's BIOL7210 Computational Genomics Course.
+A modular Nextflow pipeline for bacterial genome assembly and antimicrobial resistance (AMR) gene detection, developed as part of Georgia Tech's BIOL7210 Computational Genomics course.
 
-## Overview
+## Pipeline Overview
 
-This pipeline implements a modular workflow for bacterial genomics that includes quality control, genome assembly, gene prediction, and functional annotation. The pipeline is designed to handle both local sequence data and automated SRA data retrieval.
+This pipeline implements a streamlined workflow for bacterial genomics focused on assembly and AMR detection. It processes either local FASTQ files or retrieves data directly from NCBI's Sequence Read Archive (SRA).
 
-## Features
+### Key Features
 
-- Quality control and adapter trimming with Fastp
-- De novo genome assembly with SPAdes
-- Gene prediction using Prodigal
-- Functional annotation with:
-  - Protein domain identification (HMMER/Pfam)
-  - Homology-based analysis (DIAMOND)
-- Assembly quality assessment with QUAST
-- Comprehensive reporting with MultiQC
-- Support for local FASTQ files or direct SRA accession processing
+- **Read Processing**
+  - Quality control and adapter trimming with FASTP
+  - Support for direct SRA data retrieval
+  
+- **Assembly & Analysis**
+  - De novo genome assembly with SPAdes
+  - Gene prediction using Prodigal
+  - Assembly quality assessment with QUAST
+  
+- **AMR Detection**
+  - Antimicrobial resistance gene identification with NCBI's AMRFinderPlus
+  - Detailed AMR gene classification and analysis
 
-## Pipeline Diagram
+- **Infrastructure**
+  - Container-based execution using Docker/Singularity
+  - Support for various compute environments (local, HPC, cloud)
+  - Comprehensive logging and error handling
+
+## Workflow Diagram
 
 ```
                 ┌─────────────┐
@@ -47,42 +57,44 @@ This pipeline implements a modular workflow for bacterial genomics that includes
          │                          │
          └──────────┬───────────────┘
                     │
-         ┌──────────▼───────────┐
-         │ Assembly Annotation  │
-         └──────────┬───────────┘
-                    │
-     ┌──────────────┼──────────────┐
-     │              │              │
-┌────▼─────┐   ┌────▼─────┐   ┌────▼─────┐
-│  SPAdes  │   │ Prodigal │   │  Domain  │
-│ Assembly │   │   Gene   │   │ Analysis │
-└────┬─────┘   │ Finding  │   └────┬─────┘
-     │         └────┬─────┘        │
-     │              │              │
-     └──────────────┼──────────────┘
-                    │
-           ┌────────▼────────┐
-           │ Quality Profile │
-           └────────┬────────┘
-                    │
-     ┌──────────────┼──────────────┐
-     │              │              │
-┌────▼─────┐   ┌────▼─────┐   ┌────▼─────┐
-│  FASTP   │   │   QUAST  │   │  MultiQC │
-│    QC    │   │ Assembly │   │  Report  │
-│          │   │   QC     │   │          │
-└──────────┘   └──────────┘   └──────────┘
+                    ▼
+            ┌───────────────┐
+            │ Quality Control │
+            └────────┬──────┘
+                     │
+                     ▼
+            ┌───────────────┐
+            │  De novo      │
+            │  Assembly     │
+            └────────┬──────┘
+                     │
+         ┌───────────┴───────────┐
+         │                       │
+┌────────▼─────────┐    ┌────────▼─────────┐
+│ Assembly Quality │    │  Gene Prediction │
+│    Assessment    │    │                  │
+└──────────────────┘    └────────┬─────────┘
+                                 │
+                        ┌────────▼─────────┐
+                        │  AMR Gene        │
+                        │  Detection       │
+                        └──────────────────┘
 ```
+## Terminal Preview
+
+<div align="left">
+  <img src="image.png" alt="Terminal Preview" width="600"/>
+</div>
 
 ## Requirements
 
-- [Nextflow](https://www.nextflow.io/) (v22.10.0 or later)
+- [Nextflow](https://www.nextflow.io/) (v24.10.0 or later)
 - [Docker](https://www.docker.com/) or [Singularity](https://sylabs.io/singularity/)
-- Basic computational resources:
-  - Minimum: 8 CPU cores, 16GB RAM
-  - Recommended: 16+ CPU cores, 32GB+ RAM
+- Computational resources:
+  - Minimum: 4 CPU cores, 8GB RAM
+  - Recommended: 8+ CPU cores, 16GB+ RAM for larger genomes
 
-### Test System Info
+### Tested Environment
 
 ```bash
 OS       : Ubuntu 20.04.6 LTS (WSL2 on Windows 10 x86_64)
@@ -96,52 +108,70 @@ Java     : OpenJDK 22 (via Conda)
 
 ## Quick Start
 
-1. Clone this repository:
+### Setup
+
 ```bash
-git clone https://github.com/Aaryesh-AD/Bacterial-Genome-Analysis-Pipeline-BIOL7210.git
-cd Bacterial-Genome-Analysis-Pipeline-BIOL7210
+# Clone the repository
+git clone https://github.com/yourusername/bacterial-amr-pipeline.git
+cd bacterial-amr-pipeline
+
+# Make setup and run scripts executable
+chmod +x setup.sh run.sh
+
+# Run the setup script to download required containers
+setup.sh
 ```
 
-2. Set up the environment:
+### Basic Usage
+
 ```bash
-# Setup Environment and Dependencies
+# Run with test data (included Klebsiella pneumoniae dataset)
+./run.sh
 
-# Create a Conda environment with required dependencies
-conda env create -f environment.yml
+# Resume a previous run
+./run.sh --resume
 
-# Activate the environment
-conda activate nf-bac-genomics
+# Process SRA data directly
+./run.sh --sra SRR10971381
 
-# Make the setup script executable
-chmod +x setup.sh
+# Use custom input data
+./run.sh --reads "path/to/data/*_R{1,2}.fastq.gz"
 
-# Run the setup script to preload Docker images
-./setup.sh
+# Run with custom resources
+./run.sh --threads 16 --memory "32 GB"
 ```
 
+### Advanced Usage
 
-3. Run the pipeline with test data:
 ```bash
-nextflow run main.nf -profile docker
-```
+# Run with Singularity containers instead of Docker
+./run.sh --profile singularity
 
-4. Process SRA accessions directly:
-```bash
-nextflow run main.nf -profile docker --use_sra --sra_ids "SRR10971381,SRR10971382"
-```
+# Run on a high-performance computing cluster
+./run.sh --profile hpc
 
+# Clean work directory before running
+./run.sh --clean
+
+# See all available options
+./run.sh --help
+```
 ### Docker Container (Optional) - May cause issues
 
 You can also run the entire pipeline within a Docker container:
 
 1. Build the Docker image:
 ```bash
+# Dockerfile is located in the .docker directory
+cd .docker
 docker build -t biol7210-pipeline .
 ```
 
 2. Run the pipeline with test data:
 ```bash
 # Create a directory for results
+cd ..
+# Create a results directory to store output
 mkdir -p results
 
 # Run the pipeline with test data, mounting the results directory
@@ -162,19 +192,29 @@ docker run biol7210-pipeline help
 > This containerized approach includes Nextflow itself. Since the pipeline uses Docker for individual processes, this creates a Docker-in-Docker scenario which may require additional permissions. For simpler deployments, we recommend installing Nextflow directly on your system and using the standard execution commands.
 
 
-## Input
-
-The pipeline accepts two types of input:
+## Input Options
 
 ### Local FASTQ Files
 
-By default, the pipeline looks for paired-end reads in the `test_data` directory:
+By default, the pipeline looks for paired-end reads in the `test_data/` directory. The expected naming convention is `*_R1.fastq.gz` and `*_R2.fastq.gz`.
 
+```bash
+# Specify a custom location
+nextflow run main.nf --reads "/path/to/data/*_R{1,2}.fastq.gz"
 ```
-test_data/
-├── sample1_R1.fastq.gz
-└── sample1_R2.fastq.gz
+
+### SRA Data Retrieval
+
+For direct processing from NCBI's SRA database:
+
+```bash
+# Single accession
+nextflow run main.nf --use_sra --sra_ids "SRR10971381"
+
+# Multiple accessions (comma-separated)
+nextflow run main.nf --use_sra --sra_ids "SRR10971381,SRR10971382"
 ```
+
 ### Test Data
 
 The included test data in the `test_data/` directory contains downsampled paired-end reads from *Klebsiella pneumoniae* (SRA accession: SRR32935048). **The test data is tracked using Git LFS (Large File Storage) due to file size constraints of standard Git repositories, so take into account the storage constraints, the test data is about ~450mb**. The reads have been downsampled to approximately 75% of the original dataset (~1,400,000 reads) using seqtk:
@@ -200,144 +240,125 @@ rm -rf SRR32935048_*.fastq.gz
 ```
 This downsampled dataset is provided solely for testing the pipeline functionality and should not be used for actual research purposes. For real analyses, please use full datasets or your own sequencing data.
 
-To run the pipeline with the full Klebsiella pneumoniae dataset, you can use:
-```bash
-nextflow run main.nf -profile docker --use_sra --sra_ids "SRR32935048"
-```
-The pipeline will automatically download the full dataset from SRA.
 
-You can specify a different location using the `--reads` parameter:
+## Output Structure
 
-```bash
-nextflow run main.nf --reads "/path/to/data/*_R{1,2}.fastq.gz"
-```
-
-### SRA Accessions
-
-To download and process data directly from NCBI's Sequence Read Archive:
-
-```bash
-nextflow run main.nf --use_sra --sra_ids "SRR10971381,SRR10971382"
-```
-
-## Output
-
-Results are organized in the `results` directory (configurable with `--outdir`):
+Results are organized in the `results/` directory:
 
 ```
 results/
-├── fastp/                 # Quality-filtered reads and QC reports
-├── spades/                # Assembled genomes
-├── quast/                 # Assembly quality metrics
-├── prodigal/              # Predicted genes and proteins
-├── hmmscan/               # Protein domain annotation
-├── diamond/               # Homology search results
-├── multiqc/               # Consolidated QC report
-└── sra_data/              # Downloaded SRA data (if applicable)
+├── fastp/                   # Quality-filtered reads & QC reports
+│   ├── reports/             # HTML & JSON quality reports
+│   └── trimmed/             # Trimmed FASTQ files
+├── assemblies/              # Assembled genomes (FASTA)
+├── quast/                   # Assembly quality metrics
+├── prodigal/                # Predicted genes
+│   ├── proteins/            # Predicted protein sequences
+│   ├── annotations/         # GFF annotation files
+│   └── stats/               # Gene prediction statistics
+├── amr_finder/              # AMR detection results
+│   ├── results/             # Detailed AMR findings
+│   └── summaries/           # AMR summary reports
+├── sra_data/                # Downloaded SRA data (if applicable)
+├── analysis_summary.txt     # Pipeline summary report
+├── execution_report.html    # Nextflow execution report
+├── execution_timeline.html  # Execution timeline visualization
+├── execution_trace.txt      # Detailed trace of each process
+└── pipeline_dag.svg         # Workflow visualization
 ```
 
-## Configuration
+## Configuration & Parameters
 
 The pipeline behavior can be customized through various parameters:
 
-```bash
-# Change computational resources
-nextflow run main.nf --cpus 16 --memory '32 GB'
+### Resource Management
 
-# Specify custom databases
-nextflow run main.nf --pfam_db '/path/to/pfam/db' --nr_db '/path/to/protein/db'
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--cpus` | Number of CPU cores to use | `4` |
+| `--memory` | Maximum memory allocation | `12 GB` |
+| `--outdir` | Output directory | `results` |
 
-# Adjust tool parameters
-nextflow run main.nf --hmmscan_evalue 1e-10 --diamond_evalue 1e-10
-```
+### Data Input
 
-See the Parameters section for a complete list of options.
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--reads` | Pattern for input read files | `test_data/*_R{1,2}.fastq.gz` |
+| `--use_sra` | Enable SRA data download | `false` |
+| `--sra_ids` | Comma-separated list of SRA IDs | `""` |
+
+### Tool Parameters
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--fastp_min_length` | Minimum read length after trimming | `36` |
+| `--fastp_cut_mean_quality` | Mean quality in sliding window | `20` |
+| `--spades_mode` | Mode for SPAdes assembly | `isolate` |
+| `--spades_careful` | Enable careful mode in SPAdes | `false` |
+| `--quast_min_contig` | Minimum contig length for QUAST | `200` |
+| `--prodigal_mode` | Genetic code for Prodigal | `meta` |
+| `--amr_organism` | Taxonomy name for AMRFinder | `false` |
+| `--amr_identity` | Minimum identity threshold | `0.9` |
+| `--amr_coverage` | Minimum coverage threshold | `0.9` |
 
 ## Execution Environments
 
 The pipeline supports multiple execution environments through profiles:
 
 ```bash
-# Local execution with Docker
+# Local execution with Docker (default)
 nextflow run main.nf -profile docker
 
 # Execution with Singularity
 nextflow run main.nf -profile singularity
 
+# High-performance computing cluster with SLURM
+nextflow run main.nf -profile hpc
+
 # AWS Batch execution
-nextflow run main.nf -profile awsbatch
+nextflow run main.nf -profile aws
 ```
-
-## Parameters
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `--reads` | Pattern for input read files | `test_data/*_R{1,2}.fastq.gz` |
-| `--use_sra` | Enable SRA data download | `false` |
-| `--sra_ids` | Comma-separated list of SRA accession numbers | `""` |
-| `--outdir` | Directory for pipeline results | `results` |
-| `--pfam_db` | Path to Pfam HMM database | `false` (auto-download) |
-| `--nr_db` | Path to protein reference database for DIAMOND | `false` (auto-download) |
-| `--hmmscan_evalue` | E-value threshold for domain detection | `1e-5` |
-| `--diamond_evalue` | E-value threshold for homology search | `1e-5` |
-| `--cpus` | Number of CPU cores | `8` |
-| `--memory` | Maximum memory allocation | `16 GB` |
-| `--max_time` | Maximum execution time per task | `48.h` |
-
-## Module Details
-
-### Quality Control
-
-- **FASTP**: Adapter trimming, quality filtering, and read QC
-- **QUAST**: Assembly quality assessment
-- **MultiQC**: Consolidated reporting
-
-### Assembly and Annotation
-
-- **GET_SRR**: SRA data retrieval (when using `--use_sra`)
-- **SPADES**: De novo genome assembly
-- **PRODIGAL**: Ab initio gene prediction
-- **HMMSCAN**: Protein domain identification
-- **DIAMOND**: Homology-based annotation
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Container errors**: If container execution fails, ensure Docker/Singularity is properly installed and run setup.sh to preload containers.
+1. **Container execution errors**
+   - Ensure Docker or Singularity is properly installed and running
+   - Run setup.sh to preload all required containers
+   - Check Docker permissions (`sudo usermod -aG docker $USER`)
 
-2. **Resource limitations**: For large genome assemblies, increase available resources:
-   ```bash
-   nextflow run main.nf --cpus 16 --memory '32 GB'
-   ```
+2. **Resource limitations**
+   - For large genomes, increase available resources:
+     ```bash
+     nextflow run main.nf --cpus 16 --memory '32 GB'
+     ```
 
-3. **Path issues**: Nextflow may have issues with paths containing spaces. Use paths without spaces or special characters.
+3. **Path issues**
+   - Nextflow may have issues with paths containing spaces or special characters
+   - Use paths without spaces or properly quote them
 
-4. **SRA download failures**: Ensure internet connectivity and sufficient disk space. For persistent issues, download SRA data manually and use as local input.
+4. **SRA download failures**
+   - Ensure internet connectivity and sufficient disk space
+   - For persistent issues, download SRA data manually and use as local input
 
 ### Resuming Failed Runs
 
-To resume a failed run from the last successful task:
+To resume a failed run from the last successful process:
 
 ```bash
 nextflow run main.nf -resume
 ```
 
-## Development
-
-This pipeline was developed for BIOL7210 Computational Genomics to demonstrate Nextflow-based workflow development for bacterial genomics. The modular structure facilitates expansion and customization.
-
 ## Tools Used
 
-- [Nextflow](https://www.nextflow.io/)
-- [SPAdes](https://cab.spbu.ru/software/spades/)
-- [Fastp](https://github.com/OpenGene/fastp)
-- [Prodigal](https://github.com/hyattpd/Prodigal)
-- [HMMER](http://hmmer.org/)
-- [DIAMOND](https://github.com/bbuchfink/diamond)
-- [QUAST](http://quast.sourceforge.net/quast)
-- [MultiQC](https://multiqc.info/)
-- [SRA-tools](https://github.com/ncbi/sra-tools)
+- [Nextflow](https://www.nextflow.io/) - Workflow engine
+- [FASTP](https://github.com/OpenGene/fastp) - Read quality control
+- [SPAdes](https://cab.spbu.ru/software/spades/) - De novo assembly
+- [QUAST](http://quast.sourceforge.net/quast) - Assembly quality assessment
+- [Prodigal](https://github.com/hyattpd/Prodigal) - Gene prediction
+- [AMRFinderPlus](https://github.com/ncbi/amr) - AMR gene detection
+- [SRA-tools](https://github.com/ncbi/sra-tools) - SRA data retrieval
 
 ## Acknowledgements
 
