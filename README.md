@@ -20,7 +20,7 @@ A modular Nextflow pipeline for bacterial genome assembly and antimicrobial resi
 
 ## Pipeline Overview
 
-This pipeline implements a streamlined workflow for bacterial genomics focused on assembly and AMR detection. It processes either local FASTQ files or retrieves data directly from NCBI's Sequence Read Archive (SRA).
+This pipeline implements a simple streamlined workflow for bacterial genomics focused on assembly and AMR detection. It processes either local FASTQ files or retrieves data directly from NCBI's Sequence Read Archive (SRA).
 
 ### Key Features
 
@@ -38,8 +38,8 @@ This pipeline implements a streamlined workflow for bacterial genomics focused o
   - Detailed AMR gene classification and analysis
 
 - **Infrastructure**
-  - Container-based execution using Docker/Singularity
-  - Support for various compute environments (local, HPC, cloud)
+  - Container-based execution using Docker/Singularity (Added this using docs)
+  - Support for various compute environments (local, HPC, cloud) (HPC and cloud not tested)
   - Comprehensive logging and error handling
 
 ## DAG Workflow Diagram 
@@ -56,7 +56,7 @@ Diagram illustrating the pipeline's workflow, showing the sequence of processes 
 - [Docker](https://www.docker.com/) or [Singularity](https://sylabs.io/singularity/)
 - Computational resources:
   - Minimum: 4 CPU cores, 8GB RAM
-  - Recommended: 8+ CPU cores, 16GB+ RAM for larger genomes
+  - Recommended: 8+ CPU cores, 12GB+ RAM for larger genomes
 
 ### Tested Environment
 
@@ -167,7 +167,7 @@ docker run biol7210-pipeline help
 
 ### Local FASTQ Files
 
-By default, the pipeline looks for paired-end reads in the `test_data/` directory. The expected naming convention is `*_R1.fastq.gz` and `*_R2.fastq.gz`.
+By default, the pipeline looks for paired-end reads in the `test_data/` directory. The expected naming convention is `*_R1.fastq.gz` and `*_R2.fastq.gz`. **The test data is in Git LFS due to size constraints, so ensure you have Git LFS installed to download the test data.**
 
 ```bash
 # Specify a custom location
@@ -186,7 +186,7 @@ nextflow run main.nf --use_sra --sra_ids "SRR10971381"
 nextflow run main.nf --use_sra --sra_ids "SRR10971381,SRR10971382"
 ```
 
-### Test Data
+### Test Data (More Info)
 
 The included test data in the `test_data/` directory contains downsampled paired-end reads from *Klebsiella pneumoniae* (SRA accession: SRR32935048). **The test data is tracked using Git LFS (Large File Storage) due to file size constraints of standard Git repositories, so take into account the storage constraints, the test data is about ~450mb**. The reads have been downsampled to approximately 75% of the original dataset (~1,400,000 reads) using seqtk:
 
@@ -315,7 +315,15 @@ nextflow run main.nf -profile aws
 
 ### Resuming Failed Runs
 
-To resume a failed run from the last successful process:
+To resume a failed run from the last successful process, use the following command:
+
+```bash
+
+./run.sh -r
+
+```
+
+If the run.sh script fails, use the following command:
 
 ```bash
 nextflow run main.nf -resume
@@ -323,7 +331,7 @@ nextflow run main.nf -resume
 
 ## Tools Used
 
-- [Nextflow](https://www.nextflow.io/) - Workflow engine
+- [Nextflow](https://www.nextflow.io/) - Workflow engine (DSL2)
 - [FASTP](https://github.com/OpenGene/fastp) - Read quality control
 - [SPAdes](https://cab.spbu.ru/software/spades/) - De novo assembly
 - [QUAST](http://quast.sourceforge.net/quast) - Assembly quality assessment
@@ -333,14 +341,13 @@ nextflow run main.nf -resume
 
 ## Acknowledgements
 
-This pipeline was developed as part of the **Georgia Tech's BIOL7210 - Computational Genomics** course. Special thanks to the **Nextflow community** for their excellent documentation and examples, which greatly supported this work. 
+This pipeline was developed as part of the **Georgia Tech's BIOL7210 - Computational Genomics** course. Special thanks to the **Nextflow community** for their excellent documentation and examples, which greatly supported this work.
 
 I would also like to thank **[Dr. Christopher Gulvik](https://github.com/chrisgulvik)**, the instructor of the course, for his guidance and support throughout the coursework.
 
 ## Contact
 
 For questions or issues specific to the repository, please submit an issue.
-
 For collaboration inquiries or general questions, feel free to reach out:
 
 **[Aaryesh Deshpande](https://www.linkedin.com/in/aaryesh-ad/)**  
@@ -348,4 +355,3 @@ MS Bioinformatics
 *[adeshpande334](mailto:adeshpande334@gatech.edu)*  
 
 ---
-
