@@ -42,49 +42,13 @@ This pipeline implements a streamlined workflow for bacterial genomics focused o
   - Support for various compute environments (local, HPC, cloud)
   - Comprehensive logging and error handling
 
-## Workflow Diagram
+## DAG Workflow Diagram 
+Diagram illustrating the pipeline's workflow, showing the sequence of processes and their dependencies. Obtained using Nextflow's built-in DAG visualization tool.
 
-```
-                ┌─────────────┐
-                │ Input Reads │
-                └──────┬──────┘
-                       │
-         ┌─────────────┴────────────┐
-         │                          │
-┌────────▼─────────┐      ┌─────────▼─────────┐
-│    Local FASTQ   │      │   SRA Download    │
-└────────┬─────────┘      └─────────┬─────────┘
-         │                          │
-         └──────────┬───────────────┘
-                    │
-                    ▼
-            ┌───────────────┐
-            │ Quality Control │
-            └────────┬──────┘
-                     │
-                     ▼
-            ┌───────────────┐
-            │  De novo      │
-            │  Assembly     │
-            └────────┬──────┘
-                     │
-         ┌───────────┴───────────┐
-         │                       │
-┌────────▼─────────┐    ┌────────▼─────────┐
-│ Assembly Quality │    │  Gene Prediction │
-│    Assessment    │    │                  │
-└──────────────────┘    └────────┬─────────┘
-                                 │
-                        ┌────────▼─────────┐
-                        │  AMR Gene        │
-                        │  Detection       │
-                        └──────────────────┘
-```
-## Terminal Preview
-
-<div align="left">
-  <img src="image.png" alt="Terminal Preview" width="600"/>
+<div align="center">
+  <img src="./.assets/dag.png" alt="Dag flow" width="500"/>
 </div>
+
 
 ## Requirements
 
@@ -105,6 +69,13 @@ RAM      : 32 GB (Used: ~4.1 GB during test run)
 Nextflow : v24.10.5
 Java     : OpenJDK 22 (via Conda)
 ```
+
+### Terminal Preview
+
+<div align="left">
+  <img src="./.assets/image.png" alt="Terminal Preview" width="600"/>
+</div>
+
 
 ## Quick Start
 
@@ -364,7 +335,7 @@ nextflow run main.nf -resume
 
 This pipeline was developed as part of the **Georgia Tech's BIOL7210 - Computational Genomics** course. Special thanks to the **Nextflow community** for their excellent documentation and examples, which greatly supported this work. 
 
-I would also like to thank **Dr. Christopher Gulvik**, the instructor of the course, for his guidance and support throughout the coursework.
+I would also like to thank **[Dr. Christopher Gulvik](https://github.com/chrisgulvik)**, the instructor of the course, for his guidance and support throughout the coursework.
 
 ## Contact
 
@@ -372,9 +343,9 @@ For questions or issues specific to the repository, please submit an issue.
 
 For collaboration inquiries or general questions, feel free to reach out:
 
-**[Aaryesh Deshpande](mailto:adeshpande334@gatech.edu)**  
+**[Aaryesh Deshpande](https://www.linkedin.com/in/aaryesh-ad/)**  
 MS Bioinformatics  
-*adeshpande334*  
+*[adeshpande334](mailto:adeshpande334@gatech.edu)*  
 
 ---
 
