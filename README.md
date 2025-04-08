@@ -83,7 +83,7 @@ Java     : OpenJDK 22 (via Conda)
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/bacterial-amr-pipeline.git
+git clone https://github.com/Aaryesh-AD/Bacterial-Genomics-Pipeline-BIOL7210.git
 cd bacterial-amr-pipeline
 
 # Make setup and run scripts executable
