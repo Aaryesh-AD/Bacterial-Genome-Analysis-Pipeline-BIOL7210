@@ -84,7 +84,7 @@ Java     : OpenJDK 22 (via Conda)
 ```bash
 # Clone the repository
 git clone https://github.com/Aaryesh-AD/Bacterial-Genomics-Pipeline-BIOL7210.git
-cd bacterial-amr-pipeline
+cd Bacterial-Genomics-Pipeline-BIOL7210
 
 # Make setup and run scripts executable
 chmod +x setup.sh run.sh
